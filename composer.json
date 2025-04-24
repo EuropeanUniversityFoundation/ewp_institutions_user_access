@@ -1,0 +1,33 @@
+{
+    "name": "euf/ewp_institutions_user_access",
+    "type": "drupal-module",
+    "description": "Access control based on a user&#039;s Institution",
+    "keywords": [
+        "Drupal",
+        "Erasmus Without Paper",
+        "Access control"
+    ],
+    "homepage": "https://github.com/EuropeanUniversityFoundation/ewp_institutions_user_access",
+    "support": {
+        "issues": "https://github.com/EuropeanUniversityFoundation/ewp_institutions_user_access/issues",
+        "source": "https://github.com/EuropeanUniversityFoundation/ewp_institutions_user_access"
+    },
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Tiago Simões",
+            "email": "tiago.simoes@uni-foundation.eu",
+            "role": "Maintainer"
+        }
+    ],
+    "require": {
+        "euf/ewp_institutions": "^1.0"
+    },
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.uni-foundation.eu"
+        }
+    ]
+}

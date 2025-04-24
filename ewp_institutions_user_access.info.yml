@@ -1,0 +1,8 @@
+name: 'EWP Institutions User Access'
+type: module
+description: 'Access control based on a user&#039;s Institution'
+package: EWP
+core_version_requirement: ^10 || ^11
+dependencies:
+  - ewp_institutions:ewp_institutions
+  - ewp_institutions:ewp_institutions_user
