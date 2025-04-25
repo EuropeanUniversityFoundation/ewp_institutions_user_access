@@ -1,0 +1,6 @@
+# Local tasks
+ewp_institutions_user_access.monitor:
+  title: 'User access monitor'
+  base_route: ewp_institutions_user.settings
+  route_name: ewp_institutions_user_access.monitor
+  weight: 11

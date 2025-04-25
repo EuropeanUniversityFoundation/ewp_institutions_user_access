@@ -24,6 +24,4 @@ Finally, install the module:
 
 ## Overview
 
-This module associates any content entity with an Institution (via an entity reference base field) and performs access checks based on a user's Institution and any Institution associated with the content entity.
-
 **@TODO** elaborate on the specifics...

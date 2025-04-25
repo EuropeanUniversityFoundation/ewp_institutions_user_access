@@ -1,0 +1,7 @@
+# User access monitor.
+ewp_institutions_user_access.monitor:
+  title: 'User access monitor'
+  description: 'Monitor field settings controlling user access.'
+  parent: ewp_institutions_user.settings
+  route_name: ewp_institutions_user_access.monitor
+  weight: 11

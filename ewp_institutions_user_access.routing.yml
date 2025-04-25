@@ -1,0 +1,7 @@
+ewp_institutions_user_access.monitor:
+  path: 'admin/ewp/hei/user/access'
+  defaults:
+    _title: 'User access monitor'
+    _controller: '\Drupal\ewp_institutions_user_access\Controller\MonitorController'
+  requirements:
+    _permission: 'administer institution user access'

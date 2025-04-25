@@ -1,0 +1,3 @@
+administer institution user access:
+  title: "Administer Institution User Access"
+  restrict access: true
