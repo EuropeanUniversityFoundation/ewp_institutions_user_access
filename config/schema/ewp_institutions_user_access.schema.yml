@@ -1,0 +1,21 @@
+ewp_institutions_user_access.user_access_restriction.*:
+  type: config_entity
+  label: User access restriction
+  mapping:
+    id:
+      type: machine_name
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: uuid
+    target_entity_type:
+      type: machine_name
+      label: 'Target entity type'
+    target_entity_bundle:
+      type: machine_name
+      label: 'Target entity bundle'
+    target_field_name:
+      type: machine_name
+      label: 'Target field name'

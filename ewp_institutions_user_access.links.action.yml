@@ -1,0 +1,5 @@
+entity.user_access_restriction.add_form:
+  route_name: 'entity.user_access_restriction.add_form'
+  title: 'Add user access restriction'
+  appears_on:
+    - entity.user_access_restriction.collection

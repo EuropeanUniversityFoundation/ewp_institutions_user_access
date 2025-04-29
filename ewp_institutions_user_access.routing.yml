@@ -1,7 +1,39 @@
 ewp_institutions_user_access.monitor:
-  path: 'admin/ewp/hei/user/access'
+  path: 'admin/ewp/hei/user/access/monitor'
   defaults:
     _title: 'User access monitor'
     _controller: '\Drupal\ewp_institutions_user_access\Controller\MonitorController'
+  requirements:
+    _permission: 'administer institution user access'
+
+entity.user_access_restriction.collection:
+  path: '/admin/ewp/hei/user/access'
+  defaults:
+    _entity_list: 'user_access_restriction'
+    _title: 'User access restriction configuration'
+  requirements:
+    _permission: 'administer institution user access'
+
+entity.user_access_restriction.add_form:
+  path: '/admin/ewp/hei/user/access/add'
+  defaults:
+    _entity_form: 'user_access_restriction.add'
+    _title: 'Add an user access restriction'
+  requirements:
+    _permission: 'administer institution user access'
+
+entity.user_access_restriction.edit_form:
+  path: '/admin/ewp/hei/user/access/{user_access_restriction}'
+  defaults:
+    _entity_form: 'user_access_restriction.edit'
+    _title: 'Edit an user access restriction'
+  requirements:
+    _permission: 'administer institution user access'
+
+entity.user_access_restriction.delete_form:
+  path: '/admin/ewp/hei/user/access/{user_access_restriction}/delete'
+  defaults:
+    _entity_form: 'user_access_restriction.delete'
+    _title: 'Delete an user access restriction'
   requirements:
     _permission: 'administer institution user access'

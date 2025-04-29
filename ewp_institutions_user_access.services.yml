@@ -1,0 +1,4 @@
+services:
+  ewp_institutions_user_access.options:
+    class: Drupal\ewp_institutions_user_access\UserAccessRestrictionOptions
+    arguments: ['@entity_field.manager', '@entity_type.bundle.info', '@entity_type.manager']
