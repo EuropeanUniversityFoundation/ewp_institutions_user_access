@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ewp_institutions_user_access\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
+use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
 
 /**
  * Defines the user access restriction entity type.
@@ -21,7 +21,7 @@ use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
  *     plural = "@count user access restrictions",
  *   ),
  *   handlers = {
- *     "list_builder" = "Drupal\ewp_institutions_user_access\UserAccessRestrictionListBuilder",
+ *     "list_builder" = "Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionListBuilder",
  *     "form" = {
  *       "add" = "Drupal\ewp_institutions_user_access\Form\UserAccessRestrictionForm",
  *       "edit" = "Drupal\ewp_institutions_user_access\Form\UserAccessRestrictionForm",

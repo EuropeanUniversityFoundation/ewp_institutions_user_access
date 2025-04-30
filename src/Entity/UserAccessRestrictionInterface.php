@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Drupal\ewp_institutions_user_access;
+namespace Drupal\ewp_institutions_user_access\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
