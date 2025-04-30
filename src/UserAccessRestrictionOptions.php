@@ -8,6 +8,7 @@ use Drupal\Core\Entity\ContentEntityType;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\ewp_institutions_user_access\Entity\UserAccessRestriction;
 
 /**
  * Service class providing options for user access restriction entities.
@@ -17,11 +18,11 @@ final class UserAccessRestrictionOptions implements UserAccessRestrictionOptions
   const SEPARATOR = UserAccessRestrictionOptionsInterface::SEPARATOR;
 
   /**
-   * The entity type manager.
+   * The entity field manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $entityTypeManager;
+  protected $entityFieldManager;
 
   /**
    * The entity type bundle info.
@@ -31,14 +32,21 @@ final class UserAccessRestrictionOptions implements UserAccessRestrictionOptions
   protected $entityTypeBundleInfo;
 
   /**
-   * The entity field manager.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityFieldManager;
+  protected $entityTypeManager;
 
   /**
    * Constructs an UserAccessRestrictionOptions object.
+   *
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
+   *   The entity field manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $entityTypeBundleInfo
+   *   The entity type bundle info.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
    */
   public function __construct(
     EntityFieldManagerInterface $entityFieldManager,
@@ -57,6 +65,7 @@ final class UserAccessRestrictionOptions implements UserAccessRestrictionOptions
     $options = [];
 
     foreach ($this->entityTypeManager->getDefinitions() as $entity_definition) {
+      // Consider only content entities.
       if ($entity_definition instanceof ContentEntityType) {
         $entity_type = $entity_definition->id();
         $bundles = $this->entityTypeBundleInfo->getBundleInfo($entity_type);
@@ -66,6 +75,7 @@ final class UserAccessRestrictionOptions implements UserAccessRestrictionOptions
             ->getFieldDefinitions($entity_type, $bundle_id);
 
           foreach ($field_definitions as $field) {
+            // Consider only entity reference fields targetting Institutions.
             if ($field->getType() === 'entity_reference') {
               $target_type = $field->getSettings()['target_type'];
 
@@ -76,15 +86,18 @@ final class UserAccessRestrictionOptions implements UserAccessRestrictionOptions
                   $field->getName(),
                 ]);
 
-                $label_components = [$entity_definition->getLabel()];
-                if ($entity_type !== $bundle_id) {
-                  $label_components[] = $bundle_info['label'];
+                // Avoid providing options for machine names already in use.
+                if (!UserAccessRestriction::load($key)) {
+                  $label_components = [$entity_definition->getLabel()];
+                  if ($entity_type !== $bundle_id) {
+                    $label_components[] = $bundle_info['label'];
+                  }
+                  $label_components[] = $field->getLabel();
+
+                  $label = implode(': ', $label_components);
+
+                  $options[$key] = $label;
                 }
-                $label_components[] = $field->getLabel();
-
-                $label = implode(': ', $label_components);
-
-                $options[$key] = $label;
               }
             }
           }

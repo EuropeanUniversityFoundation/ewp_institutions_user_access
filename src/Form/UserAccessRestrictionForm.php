@@ -40,13 +40,22 @@ final class UserAccessRestrictionForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state): array {
     $form = parent::form($form, $form_state);
 
+    $options = $this->optionsProvider->getOptions();
+
+    if (empty($options)) {
+      $form['message'] = [
+        '#type' => 'markup',
+        '#markup' => $this->t('No options available.'),
+      ];
+
+      return $form;
+    }
+
     $form['target'] = [
       '#type' => 'select',
       '#title' => $this->t('Reference field'),
       '#required' => TRUE,
-      '#options' => ($this->entity->isNew())
-        ? $this->optionsProvider->getOptions()
-        : [$this->entity->id()],
+      '#options' => ($this->entity->isNew()) ? $options : [$this->entity->id()],
       '#default_value' => $this->entity->id(),
       '#ajax' => [
         'callback' => '::updateSummary',
@@ -108,6 +117,16 @@ final class UserAccessRestrictionForm extends EntityForm {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  protected function actions(array $form, FormStateInterface $form_state) {
+    if (!array_key_exists('message', $form)) {
+      $actions = parent::actions($form, $form_state);
+    }
+    return $actions ?? [];
+  }
+
+  /**
    * Update the values in the summary fields.
    */
   public function updateSummary(array $form, FormStateInterface $form_state) {
@@ -122,13 +141,13 @@ final class UserAccessRestrictionForm extends EntityForm {
     return $form['summary'];
   }
 
-
   /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state): void {
     $selected = $form_state->getValue('target');
 
+    // This should not happen but account for it anyway.
     if ($this->entity->isNew() && UserAccessRestriction::load($selected)) {
       $form_state->setErrorByName('target', $this->t('Already restricted.'));
     }
