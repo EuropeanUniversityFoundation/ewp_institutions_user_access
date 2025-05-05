@@ -35,4 +35,12 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
    */
   public function getReferenceFieldName(): ?string;
 
+  /**
+   * Indicates whether strict match is in effect..
+   *
+   * @return bool
+   *   TRUE is strict match is in effect, FALSE otherwise.
+   */
+  public function getStrictMatch(): bool;
+
 }

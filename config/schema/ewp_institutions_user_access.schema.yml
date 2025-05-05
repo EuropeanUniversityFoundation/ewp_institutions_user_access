@@ -1,13 +1,13 @@
 ewp_institutions_user_access.user_access_restriction.*:
   type: config_entity
-  label: User access restriction
+  label: 'User access restriction'
   mapping:
     id:
       type: machine_name
-      label: ID
+      label: 'ID'
     label:
       type: label
-      label: Label
+      label: 'Label'
     uuid:
       type: uuid
     restricted_type:
@@ -19,3 +19,6 @@ ewp_institutions_user_access.user_access_restriction.*:
     reference_field:
       type: machine_name
       label: 'Reference field used to calculate restrictions'
+    strict_match:
+      type: boolean
+      label: 'Strict match'

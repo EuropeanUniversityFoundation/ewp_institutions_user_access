@@ -47,6 +47,7 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
  *     "restricted_type",
  *     "restricted_bundle",
  *     "reference_field",
+ *     "strict_match",
  *   },
  * )
  */
@@ -78,6 +79,11 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   protected $reference_field;
 
   /**
+   * Whether all items must match as opposed to only one item.
+   */
+  protected $strict_match;
+
+  /**
   * {@inheritdoc}
    */
   public function getRestrictedEntityTypeId(): ?string {
@@ -96,6 +102,13 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
    */
   public function getReferenceFieldName(): ?string {
     return $this->reference_field;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
+  public function getStrictMatch(): bool {
+    return $this->strict_match ?? FALSE;
   }
 
 }

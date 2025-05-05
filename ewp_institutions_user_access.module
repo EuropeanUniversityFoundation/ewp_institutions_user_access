@@ -22,6 +22,11 @@ function ewp_institutions_user_access_entity_access(EntityInterface $entity, $op
     return AccessResult::neutral()->addCacheableDependency($entity);
   }
 
+  // Check for bypass permission.
+  if ($account->hasPermission('bypass user access restrictions')) {
+    // return AccessResult::neutral()->cachePerUser();
+  }
+
   $access_manager = \Drupal::service('ewp_institutions_user_access.manager');
 
   return $access_manager->calculate($entity, $operation, $account);

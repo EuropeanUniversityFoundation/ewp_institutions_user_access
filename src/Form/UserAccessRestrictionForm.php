@@ -109,6 +109,12 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#default_value' => $this->entity->getReferenceFieldName(),
     ];
 
+    $form['strict_match'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Strict match'),
+      '#default_value' => $this->entity->getStrictMatch(),
+    ];
+
     $form['status'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enabled'),

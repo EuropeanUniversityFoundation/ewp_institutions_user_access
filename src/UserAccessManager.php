@@ -63,15 +63,21 @@ final class UserAccessManager implements UserAccessManagerInterface {
    * {@inheritdoc}
    */
   public function calculate(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
-    // Check for bypass permission.
-    // if ($account->hasPermission('bypass user access restrictions')) {
-    //   return AccessResult::neutral()->cachePerUser();
-    // }
-
     $restrictions = $this->getApplicableRestrictions($entity);
 
+    // If there are no restrictions, the process ends here.
     if (empty($restrictions)) {
-      return AccessResult::neutral();
+      // return AccessResult::neutral();
+    }
+
+    // Permissions on own content are more specific and should take precedence.
+    if ($entity->hasField('uid')) {
+      $author_id = $entity->get('uid')->getValue()[0]['target_id'] ?? NULL;
+
+      if ($author_id === $account->id()) {
+        dpm('User is the author / owner of the entity.');
+        // return AccessResult::neutral();
+      }
     }
 
     $user = User::load($account->id());
@@ -81,7 +87,10 @@ final class UserAccessManager implements UserAccessManagerInterface {
       $reference_field = $restriction->getReferenceFieldName();
       $field_value = $this->getSortedTargetId($entity, $reference_field);
 
-      dpm(array_intersect($user_field_value, $field_value));
+      // Reference field value is necessary for the restriction.
+      if (!empty($field_value)) {
+        // TODO: pad this with usefulness!
+      }
     }
 
     return AccessResult::neutral();
@@ -124,7 +133,9 @@ final class UserAccessManager implements UserAccessManagerInterface {
     $target_id = [];
 
     foreach ($field_value as $item) {
-      $target_id[] = $item['target_id'];
+      if (!empty($item)) {
+        $target_id[] = $item['target_id'];
+      }
     }
 
     asort($target_id);
