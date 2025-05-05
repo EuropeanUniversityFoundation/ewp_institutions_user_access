@@ -78,8 +78,8 @@ final class UserAccessManager implements UserAccessManagerInterface {
     $user_field_value = $this->getSortedTargetId($user, 'user_institution');
 
     foreach ($restrictions as $restriction) {
-      $target_field_name = $restriction->getTargetEntityFieldName();
-      $field_value = $this->getSortedTargetId($entity, $target_field_name);
+      $reference_field = $restriction->getReferenceFieldName();
+      $field_value = $this->getSortedTargetId($entity, $reference_field);
 
       dpm(array_intersect($user_field_value, $field_value));
     }
@@ -100,8 +100,8 @@ final class UserAccessManager implements UserAccessManagerInterface {
     $restrictions = $this->entityTypeManager
       ->getStorage('user_access_restriction')
       ->loadByProperties([
-        'target_entity_type' => $entity->getEntityTypeId(),
-        'target_entity_bundle' => $entity->bundle(),
+        'restricted_type' => $entity->getEntityTypeId(),
+        'restricted_bundle' => $entity->bundle(),
       ]);
 
     return $restrictions;

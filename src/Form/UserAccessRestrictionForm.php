@@ -55,7 +55,9 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Reference field'),
       '#required' => TRUE,
-      '#options' => ($this->entity->isNew()) ? $options : [$this->entity->id()],
+      '#options' => ($this->entity->isNew())
+        ? $options
+        : [$this->entity->id() => $this->entity->label()],
       '#default_value' => $this->entity->id(),
       '#ajax' => [
         'callback' => '::updateSummary',
@@ -71,7 +73,7 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#title' => $this->t('Summary'),
       '#prefix' => '<div id="form-summary">',
       '#suffix' => '</div>',
-      '#open' => TRUE,
+      '#open' => $this->entity->isNew(),
     ];
 
     $form['summary']['label'] = [
@@ -92,19 +94,19 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#disabled' => TRUE,
     ];
 
-    $form['summary']['target_entity_type'] = [
+    $form['summary']['restricted_type'] = [
       '#type' => 'item',
-      '#default_value' => $this->entity->getTargetEntityTypeId(),
+      '#default_value' => $this->entity->getRestrictedEntityTypeId(),
     ];
 
-    $form['summary']['target_entity_bundle'] = [
+    $form['summary']['restricted_bundle'] = [
       '#type' => 'value',
-      '#default_value' => $this->entity->getTargetEntityBundleId(),
+      '#default_value' => $this->entity->getRestrictedEntityBundleId(),
     ];
 
-    $form['summary']['target_field_name'] = [
+    $form['summary']['reference_field'] = [
       '#type' => 'value',
-      '#default_value' => $this->entity->getTargetEntityFieldName(),
+      '#default_value' => $this->entity->getReferenceFieldName(),
     ];
 
     $form['status'] = [
@@ -149,20 +151,23 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     // This should not happen but account for it anyway.
     if ($this->entity->isNew() && UserAccessRestriction::load($selected)) {
-      $form_state->setErrorByName('target', $this->t('Already restricted.'));
+      $message = $this->t('Already restricted.');
+      $form_state->setErrorByName('target', $message);
     }
     else {
       $form['summary']['label']['#disabled'] = FALSE;
       $form['summary']['id']['#disabled'] = FALSE;
 
+      $id = $selected ?? $this->entity->id();
       $options = $this->optionsProvider->getOptions();
-      $form_state->setValue('label', $options[$selected]);
-      $form_state->setValue('id', $selected);
+      $label = $options[$selected] ?? $this->entity->label();
+      $form_state->setValue('label', $label);
+      $form_state->setValue('id', $id);
 
-      $components = explode(self::SEPARATOR, $selected, 3);
-      $form_state->setValue('target_entity_type', $components[0]);
-      $form_state->setValue('target_entity_bundle', $components[1]);
-      $form_state->setValue('target_field_name', $components[2]);
+      $components = explode(self::SEPARATOR, $id, 3);
+      $form_state->setValue('restricted_type', $components[0]);
+      $form_state->setValue('restricted_bundle', $components[1]);
+      $form_state->setValue('reference_field', $components[2]);
     }
   }
 

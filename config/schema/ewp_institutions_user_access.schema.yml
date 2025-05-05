@@ -10,12 +10,12 @@ ewp_institutions_user_access.user_access_restriction.*:
       label: Label
     uuid:
       type: uuid
-    target_entity_type:
+    restricted_type:
       type: machine_name
-      label: 'Target entity type'
-    target_entity_bundle:
+      label: 'Entity type to be restricted'
+    restricted_bundle:
       type: machine_name
-      label: 'Target entity bundle'
-    target_field_name:
+      label: 'Entity bundle to be restricted'
+    reference_field:
       type: machine_name
-      label: 'Target field name'
+      label: 'Reference field used to calculate restrictions'

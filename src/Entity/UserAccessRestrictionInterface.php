@@ -12,27 +12,27 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface UserAccessRestrictionInterface extends ConfigEntityInterface {
 
   /**
-   * Gets the ID of the type of the target entity.
+   * Gets the entity type to be restricted.
    *
    * @return string|null
-   *   The target entity type ID.
+   *   The restricted entity type ID.
    */
-  public function getTargetEntityTypeId(): ?string;
+  public function getRestrictedEntityTypeId(): ?string;
 
   /**
-   * Gets the ID of the bundle of the target entity.
+   * Gets the entity bundle to be restricted.
    *
    * @return string|null
-   *   The target entity bundle ID.
+   *   The restricted entity bundle ID.
    */
-  public function getTargetEntityBundleId(): ?string;
+  public function getRestrictedEntityBundleId(): ?string;
 
   /**
-   * Gets the name of the reference field on the target entity.
+   * Gets entity reference field user to calculate restrictions.
    *
    * @return string|null
-   *   The target entity reference field name.
+   *   The entity reference field name on the restricted entity type and bundle.
    */
-  public function getTargetEntityFieldName(): ?string;
+  public function getReferenceFieldName(): ?string;
 
 }

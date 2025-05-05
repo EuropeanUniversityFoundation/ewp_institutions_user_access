@@ -44,9 +44,9 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "target_entity_type",
- *     "target_entity_bundle",
- *     "target_field_name",
+ *     "restricted_type",
+ *     "restricted_bundle",
+ *     "reference_field",
  *   },
  * )
  */
@@ -63,39 +63,39 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   protected string $label;
 
   /**
-   * The restriction target entity type.
+   * The entity type to be restricted.
    */
-  protected $target_entity_type;
+  protected $restricted_type;
 
   /**
-   * The restriction target entity bundle.
+   * The entity bundle to be restricted.
    */
-  protected $target_entity_bundle;
+  protected $restricted_bundle;
 
   /**
-   * The restriction target field name.
+   * The reference field used to calculate restrictions.
    */
-  protected $target_field_name;
+  protected $reference_field;
 
   /**
   * {@inheritdoc}
    */
-  public function getTargetEntityTypeId(): ?string {
-    return $this->target_entity_type;
+  public function getRestrictedEntityTypeId(): ?string {
+    return $this->restricted_type;
   }
 
   /**
   * {@inheritdoc}
    */
-  public function getTargetEntityBundleId(): ?string {
-    return $this->target_entity_bundle;
+  public function getRestrictedEntityBundleId(): ?string {
+    return $this->restricted_bundle;
   }
 
   /**
   * {@inheritdoc}
    */
-  public function getTargetEntityFieldName(): ?string {
-    return $this->target_field_name;
+  public function getReferenceFieldName(): ?string {
+    return $this->reference_field;
   }
 
 }
