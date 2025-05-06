@@ -13,12 +13,14 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\EntityOwnerInterface;
-
+use Drupal\ewp_institutions_user\InstitutionUserBridge;
 
 /**
  * User access manager service.
  */
 final class UserAccessManager implements UserAccessManagerInterface {
+
+  const BASE_FIELD = InstitutionUserBridge::BASE_FIELD;
 
   /**
    * The entity field manager.
@@ -69,24 +71,30 @@ final class UserAccessManager implements UserAccessManagerInterface {
 
     // If there are no restrictions, the process ends here.
     if (empty($restrictions)) {
-      // return AccessResult::neutral();
+      return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
     // If there are specific permissions for content owners, defer to those.
     if ($entity instanceof EntityOwnerInterface) {
-      // return AccessResult::neutral();
+      if ($account->id() === $entity->getOwnerId()) {
+        return AccessResult::neutral()
+          ->cachePerPermissions()
+          ->addCacheableDependency($entity);
+      }
     }
 
     $user = User::load($account->id());
-    $user_field_value = $this->getSortedTargetId($user, 'user_institution');
+    $user_field_value = $this->getSortedTargetId($user, self::BASE_FIELD);
 
     foreach ($restrictions as $restriction) {
       $reference_field = $restriction->getReferenceFieldName();
+      $strict = $restriction->getStrictMatch();
+
       $field_value = $this->getSortedTargetId($entity, $reference_field);
 
-      // Reference field value is necessary for the restriction.
+      // Reference field value is necessary to calculate the restriction.
       if (!empty($field_value)) {
-        // TODO: pad this with usefulness!
+        $match = $this->valuesMatch($user_field_value, $field_value, $strict);
       }
     }
 
@@ -106,6 +114,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
     $restrictions = $this->entityTypeManager
       ->getStorage('user_access_restriction')
       ->loadByProperties([
+        'status' => TRUE,
         'restricted_type' => $entity->getEntityTypeId(),
         'restricted_bundle' => $entity->bundle(),
       ]);
@@ -135,9 +144,32 @@ final class UserAccessManager implements UserAccessManagerInterface {
       }
     }
 
-    asort($target_id);
+    sort($target_id);
 
     return $target_id;
+  }
+
+  /**
+   * Checks whether user field values match reference field values.
+   *
+   * @param array $user_field_value
+   *   User field values.
+   * @param array $field_value
+   *   Reference field values.
+   * @param bool $strict_match
+   *   Whether the values will be strictly matched.
+   *
+   * @return bool
+   *   Indicates whether values match.
+   */
+  private function valuesMatch(array $user_field_value, array $field_value, bool $strict = FALSE): bool {
+    $overlap = array_values(array_intersect($user_field_value, $field_value));
+
+    if ($strict) {
+      return ($overlap === $field_value);
+    }
+
+    return !empty($overlap);
   }
 
 }

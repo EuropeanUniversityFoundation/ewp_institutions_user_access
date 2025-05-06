@@ -18,13 +18,17 @@ use Drupal\Core\Session\AccountInterface;
 function ewp_institutions_user_access_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
   // If not an instance of 'FieldableEntityInterface' return neutral.
   if (!$entity instanceof FieldableEntityInterface) {
-    // This access result is only dependent on the entity:
+    return AccessResult::neutral()->addCacheableDependency($entity);
+  }
+
+  // Users and Institutions are out of scope.
+  if (in_array($entity->getEntityTypeId(), ['user', 'hei'])) {
     return AccessResult::neutral()->addCacheableDependency($entity);
   }
 
   // Check for bypass permission.
   if ($account->hasPermission('bypass user access restrictions')) {
-    // return AccessResult::neutral()->cachePerUser();
+    return AccessResult::allowed()->cachePerPermissions();
   }
 
   $access_manager = \Drupal::service('ewp_institutions_user_access.manager');
