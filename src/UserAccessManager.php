@@ -12,6 +12,8 @@ use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
+use Drupal\user\EntityOwnerInterface;
+
 
 /**
  * User access manager service.
@@ -70,14 +72,9 @@ final class UserAccessManager implements UserAccessManagerInterface {
       // return AccessResult::neutral();
     }
 
-    // Permissions on own content are more specific and should take precedence.
-    if ($entity->hasField('uid')) {
-      $author_id = $entity->get('uid')->getValue()[0]['target_id'] ?? NULL;
-
-      if ($author_id === $account->id()) {
-        dpm('User is the author / owner of the entity.');
-        // return AccessResult::neutral();
-      }
+    // If there are specific permissions for content owners, defer to those.
+    if ($entity instanceof EntityOwnerInterface) {
+      // return AccessResult::neutral();
     }
 
     $user = User::load($account->id());

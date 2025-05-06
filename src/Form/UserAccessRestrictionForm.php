@@ -112,6 +112,10 @@ final class UserAccessRestrictionForm extends EntityForm {
     $form['strict_match'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Strict match'),
+      '#description' => $this->t('%user values must match ALL @field values.', [
+        '%user' => $this->t('User Institution'),
+        '@field' => $this->t('referenced Institution'),
+      ]),
       '#default_value' => $this->entity->getStrictMatch(),
     ];
 
