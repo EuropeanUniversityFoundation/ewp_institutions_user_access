@@ -19,6 +19,18 @@ ewp_institutions_user_access.user_access_restriction.*:
     reference_field:
       type: machine_name
       label: 'Reference field used to calculate restrictions'
+    restrict_view:
+      type: boolean
+      label: "Restrict 'view' operation"
+    restrict_edit:
+      type: boolean
+      label: "Restrict 'edit' operation"
+    restrict_delete:
+      type: boolean
+      label: "Restrict 'delete' operation"
+    restrict_other:
+      type: boolean
+      label: 'Restrict any other operation'
     strict_match:
       type: boolean
       label: 'Strict match'

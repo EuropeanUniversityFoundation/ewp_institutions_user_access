@@ -109,6 +109,56 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#default_value' => $this->entity->getReferenceFieldName(),
     ];
 
+    $form['operations'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Operations'),
+    ];
+
+    $form['operations']['description'] = [
+      '#type' => 'markup',
+      '#markup' => $this->t('Check global permissions to be restricted.'),
+    ];
+
+    $title_arg = $this->t('%user field value', [
+      '%user' => $this->t('User Institution'),
+    ]);
+
+    $form['operations']['restrict_view'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
+        '%operation' => $this->t('View any ...'),
+        '@user_hei' => $title_arg,
+      ]),
+      '#default_value' => $this->entity->getRestrictView(),
+    ];
+
+    $form['operations']['restrict_edit'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
+        '%operation' => $this->t('Edit any ...'),
+        '@user_hei' => $title_arg,
+      ]),
+      '#default_value' => $this->entity->getRestrictEdit(),
+    ];
+
+    $form['operations']['restrict_delete'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
+        '%operation' => $this->t('Delete any ...'),
+        '@user_hei' => $title_arg,
+      ]),
+      '#default_value' => $this->entity->getRestrictDelete(),
+    ];
+
+    $form['operations']['restrict_other'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to @operation based on @user_hei', [
+        '@operation' => $this->t('any other operation'),
+        '@user_hei' => $title_arg,
+      ]),
+      '#default_value' => $this->entity->getRestrictOther(),
+    ];
+
     $form['strict_match'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Strict match'),

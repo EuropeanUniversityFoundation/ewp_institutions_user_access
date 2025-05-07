@@ -36,10 +36,42 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getReferenceFieldName(): ?string;
 
   /**
-   * Indicates whether strict match is in effect..
+   * Indicates whether to restrict the 'view' operation.
    *
    * @return bool
-   *   TRUE is strict match is in effect, FALSE otherwise.
+   *   TRUE if the 'view' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictView(): bool;
+
+  /**
+   * Indicates whether to restrict the 'edit' operation.
+   *
+   * @return bool
+   *   TRUE if the 'edit' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictEdit(): bool;
+
+  /**
+   * Indicates whether to restrict the 'delete' operation.
+   *
+   * @return bool
+   *   TRUE if the 'delete' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictDelete(): bool;
+
+  /**
+   * Indicates whether to restrict any other operation.
+   *
+   * @return bool
+   *   TRUE if any other operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictOther(): bool;
+
+  /**
+   * Indicates whether strict match is in effect.
+   *
+   * @return bool
+   *   TRUE if strict match is in effect, FALSE otherwise.
    */
   public function getStrictMatch(): bool;
 

@@ -47,6 +47,10 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
  *     "restricted_type",
  *     "restricted_bundle",
  *     "reference_field",
+ *     "restrict_view",
+ *     "restrict_edit",
+ *     "restrict_delete",
+ *     "restrict_other",
  *     "strict_match",
  *   },
  * )
@@ -79,6 +83,26 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   protected $reference_field;
 
   /**
+   * Whether to restrict the 'view' operation.
+   */
+  protected $restrict_view;
+
+  /**
+   * Whether to restrict the 'edit' operation.
+   */
+  protected $restrict_edit;
+
+  /**
+   * Whether to restrict the 'delete' operation.
+   */
+  protected $restrict_delete;
+
+  /**
+   * Whether to restrict any other operation.
+   */
+  protected $restrict_other;
+
+  /**
    * Whether all items must match as opposed to only one item.
    */
   protected $strict_match;
@@ -107,8 +131,36 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
   * {@inheritdoc}
    */
+  public function getRestrictView(): bool {
+    return (bool) $this->restrict_view ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
+  public function getRestrictEdit(): bool {
+    return (bool) $this->restrict_edit ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
+  public function getRestrictDelete(): bool {
+    return (bool) $this->restrict_delete ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
+  public function getRestrictOther(): bool {
+    return (bool) $this->restrict_other ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
   public function getStrictMatch(): bool {
-    return $this->strict_match ?? FALSE;
+    return (bool) $this->strict_match ?? FALSE;
   }
 
 }
