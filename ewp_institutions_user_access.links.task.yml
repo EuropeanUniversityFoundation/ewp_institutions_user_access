@@ -1,11 +1,4 @@
-# Local tasks
-ewp_institutions_user_access.monitor:
-  title: 'User access monitor'
-  base_route: ewp_institutions_user.settings
-  route_name: ewp_institutions_user_access.monitor
-  weight: 11
-
-entity.user_access_restriction.overview:
+entity.user_access_restriction.collection:
   title: 'User access restrictions'
   base_route: ewp_institutions_user.settings
   description: 'List of user access restrictions to extend site functionality.'

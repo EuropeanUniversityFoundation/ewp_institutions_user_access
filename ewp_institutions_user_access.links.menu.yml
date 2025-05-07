@@ -1,12 +1,4 @@
-# User access monitor.
-ewp_institutions_user_access.monitor:
-  title: 'User access monitor'
-  description: 'Monitor field settings controlling user access.'
-  parent: ewp_institutions_user.settings
-  route_name: ewp_institutions_user_access.monitor
-  weight: 11
-
-entity.user_access_restriction.overview:
+entity.user_access_restriction.collection:
   title: User access restrictions
   parent: ewp_institutions_user.settings
   description: 'List of user access restrictions to extend site functionality.'
