@@ -14,6 +14,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\ewp_institutions_user\InstitutionUserBridge;
+use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
 
 /**
  * User access manager service.
@@ -74,7 +75,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
       return AccessResult::neutral()->addCacheableDependency($entity);
     }
 
-    // If there are specific permissions for content owners, defer to those.
+    // When the user is the owner of the entity, defer to specific permissions.
     if ($entity instanceof EntityOwnerInterface) {
       if ($account->id() === $entity->getOwnerId()) {
         return AccessResult::neutral()
@@ -88,17 +89,46 @@ final class UserAccessManager implements UserAccessManagerInterface {
 
     foreach ($restrictions as $restriction) {
       $reference_field = $restriction->getReferenceFieldName();
-      $strict = $restriction->getStrictMatch();
-
       $field_value = $this->getSortedTargetId($entity, $reference_field);
 
       // Reference field value is necessary to calculate the restriction.
       if (!empty($field_value)) {
+        $strict = $restriction->getStrictMatch();
         $match = $this->valuesMatch($user_field_value, $field_value, $strict);
+
+        switch ($operation) {
+          case 'view':
+            if (!$match && $restriction->getRestrictView()) {
+              return $this->accessForbidden($entity, $restriction);
+            }
+            break;
+
+          case 'edit':
+            if (!$match && $restriction->getRestrictEdit()) {
+              return $this->accessForbidden($entity, $restriction);
+            }
+            break;
+
+          case 'delete':
+            if (!$match && $restriction->getRestrictDelete()) {
+              return $this->accessForbidden($entity, $restriction);
+            }
+            break;
+
+          default:
+            if (!$match && $restriction->getRestrictOther()) {
+              return $this->accessForbidden($entity, $restriction);
+            }
+            break;
+        }
       }
     }
 
-    return AccessResult::neutral();
+    $access = AccessResult::neutral()
+      ->cachePerUser()
+      ->addCacheableDependency($entity);
+
+    return $access;
   }
 
   /**
@@ -170,6 +200,26 @@ final class UserAccessManager implements UserAccessManagerInterface {
     }
 
     return !empty($overlap);
+  }
+
+  /**
+   * Generates a forbidden AccessResult with appropriate caching.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to which access is being forbidden.
+   * @param \Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface $restriction
+   *   The restriction that determines this access result.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  private function accessForbidden(EntityInterface $entity, UserAccessRestrictionInterface $restriction): AccessResultInterface {
+    $access = AccessResult::forbidden()
+      ->cachePerUser()
+      ->addCacheableDependency($entity)
+      ->addCacheableDependency($restriction);
+
+    return $access;
   }
 
 }
