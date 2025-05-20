@@ -22,15 +22,24 @@ ewp_institutions_user_access.user_access_restriction.*:
     restrict_view:
       type: boolean
       label: "Restrict 'view' operation"
+    restrict_view_match_all:
+      type: boolean
+      label: "Restrict 'view' operation (match all references)"
     restrict_edit:
       type: boolean
       label: "Restrict 'edit' operation"
+    restrict_edit_match_all:
+      type: boolean
+      label: "Restrict 'edit' operation (match all references)"
     restrict_delete:
       type: boolean
       label: "Restrict 'delete' operation"
+    restrict_delete_match_all:
+      type: boolean
+      label: "Restrict 'delete' operation (match all references)"
     restrict_other:
       type: boolean
       label: 'Restrict any other operation'
-    strict_match:
+    restrict_other_match_all:
       type: boolean
-      label: 'Strict match'
+      label: "Restrict any other operation (match all references)"

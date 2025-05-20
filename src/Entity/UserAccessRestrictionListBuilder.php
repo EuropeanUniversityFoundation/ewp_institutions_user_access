@@ -19,7 +19,6 @@ final class UserAccessRestrictionListBuilder extends ConfigEntityListBuilder {
     $header['label'] = $this->t('Label');
     $header['id'] = $this->t('Machine name');
     $header['restricted'] = $this->t('Restricted');
-    $header['match_mode'] = $this->t('Match mode');
     $header['status'] = $this->t('Status');
     return $header + parent::buildHeader();
   }
@@ -32,27 +31,40 @@ final class UserAccessRestrictionListBuilder extends ConfigEntityListBuilder {
     $restricted = [];
 
     if ($entity->getRestrictView()) {
-      $restricted[] = 'view';
+      $operation = 'view';
+      if ($entity->getRestrictViewMatchAll()) {
+        $operation .= ' (match all)';
+      }
+      $restricted[] = $operation;
     }
 
     if ($entity->getRestrictEdit()) {
-      $restricted[] = 'edit';
+      $operation = 'edit';
+      if ($entity->getRestrictEditMatchAll()) {
+        $operation .= ' (match all)';
+      }
+      $restricted[] = $operation;
     }
 
     if ($entity->getRestrictDelete()) {
-      $restricted[] = 'delete';
+      $operation = 'delete';
+      if ($entity->getRestrictDeleteMatchAll()) {
+        $operation .= ' (match all)';
+      }
+      $restricted[] = $operation;
     }
 
     if ($entity->getRestrictOther()) {
-      $restricted[] = 'other';
+      $operation = 'other';
+      if ($entity->getRestrictOtherMatchAll()) {
+        $operation .= ' (match all)';
+      }
+      $restricted[] = $operation;
     }
 
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
     $row['restricted'] = implode(', ', $restricted);
-    $row['match_mode'] = ($entity->getStrictMatch())
-      ? $this->t('Strict (match all)')
-      : $this->t('Loose (match any)');
     $row['status'] = $entity->status()
       ? $this->t('Enabled')
       : $this->t('Disabled');

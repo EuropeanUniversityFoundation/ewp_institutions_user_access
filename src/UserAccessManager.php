@@ -85,43 +85,48 @@ final class UserAccessManager implements UserAccessManagerInterface {
     }
 
     $user = User::load($account->id());
-    $user_field_value = $this->getSortedTargetId($user, self::BASE_FIELD);
+    $user_ref = $this->getSortedTargetId($user, self::BASE_FIELD);
+
+    $forbidden = FALSE;
 
     foreach ($restrictions as $restriction) {
-      $reference_field = $restriction->getReferenceFieldName();
-      $field_value = $this->getSortedTargetId($entity, $reference_field);
+      if (!$forbidden) {
+        $reference_field = $restriction->getReferenceFieldName();
+        $ref = $this->getSortedTargetId($entity, $reference_field);
 
-      // Reference field value is necessary to calculate the restriction.
-      if (!empty($field_value)) {
-        $strict = $restriction->getStrictMatch();
-        $match = $this->valuesMatch($user_field_value, $field_value, $strict);
-
-        switch ($operation) {
-          case 'view':
-            if (!$match && $restriction->getRestrictView()) {
-              return $this->accessForbidden($entity, $restriction);
-            }
+        // Reference field value is necessary to calculate the restriction.
+        if (!empty($ref)) {
+          switch ($operation) {
+            case UserAccessRestrictionInterface::OPERATION_VIEW:
+            $match_all = $restriction->getRestrictViewMatchAll();
+            $match = $this->valuesMatch($user_ref, $ref, $match_all);
+            $forbidden = (!$match && $restriction->getRestrictView());
             break;
 
-          case 'edit':
-            if (!$match && $restriction->getRestrictEdit()) {
-              return $this->accessForbidden($entity, $restriction);
-            }
+            case UserAccessRestrictionInterface::OPERATION_EDIT:
+            $match_all = $restriction->getRestrictEditMatchAll();
+            $match = $this->valuesMatch($user_ref, $ref, $match_all);
+            $forbidden = (!$match && $restriction->getRestrictEdit());
             break;
 
-          case 'delete':
-            if (!$match && $restriction->getRestrictDelete()) {
-              return $this->accessForbidden($entity, $restriction);
-            }
+            case UserAccessRestrictionInterface::OPERATION_DELETE:
+            $match_all = $restriction->getRestrictDeleteMatchAll();
+            $match = $this->valuesMatch($user_ref, $ref, $match_all);
+            $forbidden = (!$match && $restriction->getRestrictDelete());
             break;
 
-          default:
-            if (!$match && $restriction->getRestrictOther()) {
-              return $this->accessForbidden($entity, $restriction);
-            }
+            default:
+            $match_all = $restriction->getRestrictOtherMatchAll();
+            $match = $this->valuesMatch($user_ref, $ref, $match_all);
+            $forbidden = (!$match && $restriction->getRestrictOther());
             break;
+          }
         }
       }
+    }
+
+    if ($forbidden) {
+      return $this->accessForbidden($entity, $restriction);
     }
 
     $access = AccessResult::neutral()
@@ -164,11 +169,11 @@ final class UserAccessManager implements UserAccessManagerInterface {
    *   A sorted list of referenced entity IDs.
    */
   private function getSortedTargetId(EntityInterface $entity, string $field): array {
-    $field_value = $entity->get($field)->getValue();
+    $ref = $entity->get($field)->getValue();
 
     $target_id = [];
 
-    foreach ($field_value as $item) {
+    foreach ($ref as $item) {
       if (!empty($item)) {
         $target_id[] = $item['target_id'];
       }
@@ -182,21 +187,21 @@ final class UserAccessManager implements UserAccessManagerInterface {
   /**
    * Checks whether user field values match reference field values.
    *
-   * @param array $user_field_value
+   * @param array $user_ref
    *   User field values.
-   * @param array $field_value
+   * @param array $ref
    *   Reference field values.
-   * @param bool $strict_match
+   * @param bool $match_all
    *   Whether the values will be strictly matched.
    *
    * @return bool
    *   Indicates whether values match.
    */
-  private function valuesMatch(array $user_field_value, array $field_value, bool $strict = FALSE): bool {
-    $overlap = array_values(array_intersect($user_field_value, $field_value));
+  private function valuesMatch(array $user_ref, array $ref, bool $match_all = FALSE): bool {
+    $overlap = array_values(array_intersect($user_ref, $ref));
 
-    if ($strict) {
-      return ($overlap === $field_value);
+    if ($match_all) {
+      return ($overlap === $ref);
     }
 
     return !empty($overlap);

@@ -109,64 +109,152 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#default_value' => $this->entity->getReferenceFieldName(),
     ];
 
-    $form['operations'] = [
-      '#type' => 'fieldset',
-      '#title' => $this->t('Operations'),
-    ];
+    $fieldset_title = '%op';
+    $checkbox_title = 'Restrict access to %op based on @user_hei';
+    $match_all_title = '@user_hei must match all @ref to access %op';
 
-    $form['operations']['description'] = [
-      '#type' => 'markup',
-      '#markup' => $this->t('Check global permissions to be restricted.'),
-    ];
-
-    $title_arg = $this->t('%user field value', [
+    $title_user_arg = $this->t('%user field value', [
       '%user' => $this->t('User Institution'),
     ]);
 
-    $form['operations']['restrict_view'] = [
+    $title_ref_arg = $this->t('referenced entities');
+
+    $operation_view = $this->t('View any ...');
+    $operation_edit = $this->t('Edit any ...');
+    $operation_delete = $this->t('Delete any ...');
+
+    $form['op_view'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t($fieldset_title, [
+        '%op' => $operation_view,
+      ]),
+    ];
+
+    $form['op_view']['restrict_view'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
-        '%operation' => $this->t('View any ...'),
-        '@user_hei' => $title_arg,
+      '#title' => $this->t($checkbox_title, [
+        '%op' => $operation_view,
+        '@user_hei' => $title_user_arg,
       ]),
       '#default_value' => $this->entity->getRestrictView(),
+      '#attributes' => [
+        'name' => 'restrict_view',
+      ],
     ];
 
-    $form['operations']['restrict_edit'] = [
+    $form['op_view']['restrict_view_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
-        '%operation' => $this->t('Edit any ...'),
-        '@user_hei' => $title_arg,
+      '#title' => $this->t($match_all_title, [
+        '@user_hei' => $title_user_arg,
+        '@ref' => $title_ref_arg,
+        '%op' => $operation_view,
+      ]),
+      '#default_value' => $this->entity->getRestrictViewMatchAll(),
+      '#states' => [
+        'enabled' => [
+          ':input[name="restrict_view"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['op_edit'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t($fieldset_title, [
+        '%op' => $operation_edit,
+      ]),
+    ];
+
+    $form['op_edit']['restrict_edit'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t($checkbox_title, [
+        '%op' => $operation_edit,
+        '@user_hei' => $title_user_arg,
       ]),
       '#default_value' => $this->entity->getRestrictEdit(),
+      '#attributes' => [
+        'name' => 'restrict_edit',
+      ],
     ];
 
-    $form['operations']['restrict_delete'] = [
+    $form['op_edit']['restrict_edit_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Restrict access to %operation based on @user_hei', [
-        '%operation' => $this->t('Delete any ...'),
-        '@user_hei' => $title_arg,
+      '#title' => $this->t($match_all_title, [
+        '@user_hei' => $title_user_arg,
+        '@ref' => $title_ref_arg,
+        '%op' => $operation_edit,
+      ]),
+      '#default_value' => $this->entity->getRestrictEditMatchAll(),
+      '#states' => [
+        'enabled' => [
+          ':input[name="restrict_edit"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['op_delete'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t($fieldset_title, [
+        '%op' => $operation_delete,
+      ]),
+    ];
+
+    $form['op_delete']['restrict_delete'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t($checkbox_title, [
+        '%op' => $operation_delete,
+        '@user_hei' => $title_user_arg,
       ]),
       '#default_value' => $this->entity->getRestrictDelete(),
+      '#attributes' => [
+        'name' => 'restrict_delete',
+      ],
     ];
 
-    $form['operations']['restrict_other'] = [
+    $form['op_delete']['restrict_delete_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Restrict access to @operation based on @user_hei', [
-        '@operation' => $this->t('any other operation'),
-        '@user_hei' => $title_arg,
+      '#title' => $this->t($match_all_title, [
+        '@user_hei' => $title_user_arg,
+        '@ref' => $title_ref_arg,
+        '%op' => $operation_delete,
+      ]),
+      '#default_value' => $this->entity->getRestrictDeleteMatchAll(),
+      '#states' => [
+        'enabled' => [
+          ':input[name="restrict_delete"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    $form['op_other'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Other operations'),
+    ];
+
+    $form['op_other']['restrict_other'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to @op based on @user_hei', [
+        '@op' => $this->t('any other operation'),
+        '@user_hei' => $title_user_arg,
       ]),
       '#default_value' => $this->entity->getRestrictOther(),
+      '#attributes' => [
+        'name' => 'restrict_other',
+      ],
     ];
 
-    $form['strict_match'] = [
+    $form['op_other']['restrict_other_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Strict match'),
-      '#description' => $this->t('%user values must match ALL @field values.', [
-        '%user' => $this->t('User Institution'),
-        '@field' => $this->t('referenced Institution'),
+      '#title' => $this->t('@user_hei must match all @ref to access @op', [
+        '@user_hei' => $title_user_arg,
+        '@ref' => $title_ref_arg,
+        '@op' => $this->t('any other operation'),
       ]),
-      '#default_value' => $this->entity->getStrictMatch(),
+      '#default_value' => $this->entity->getRestrictOtherMatchAll(),
+      '#states' => [
+        'enabled' => [
+          ':input[name="restrict_other"]' => ['checked' => TRUE],
+        ],
+      ],
     ];
 
     $form['status'] = [

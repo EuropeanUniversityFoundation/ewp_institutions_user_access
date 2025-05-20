@@ -13,6 +13,10 @@ use Drupal\Core\Session\AccountInterface;
  */
 interface UserAccessManagerInterface {
 
+  const OPERATION_VIEW = 'view';
+  const OPERATION_EDIT = 'edit';
+  const OPERATION_DELETE = 'delete';
+
   /**
    * Calculates access to an entity.
    *

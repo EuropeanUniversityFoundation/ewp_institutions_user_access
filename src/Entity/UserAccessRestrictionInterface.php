@@ -36,7 +36,7 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getReferenceFieldName(): ?string;
 
   /**
-   * Indicates whether to restrict the 'view' operation.
+   * Whether to restrict the 'view' operation.
    *
    * @return bool
    *   TRUE if the 'view' operation should be restricted, FALSE otherwise.
@@ -44,7 +44,15 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getRestrictView(): bool;
 
   /**
-   * Indicates whether to restrict the 'edit' operation.
+   * Whether to restrict the 'view' operation (match all references).
+   *
+   * @return bool
+   *   TRUE if the 'view' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictViewMatchAll(): bool;
+
+  /**
+   * Whether to restrict the 'edit' operation.
    *
    * @return bool
    *   TRUE if the 'edit' operation should be restricted, FALSE otherwise.
@@ -52,7 +60,15 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getRestrictEdit(): bool;
 
   /**
-   * Indicates whether to restrict the 'delete' operation.
+   * Whether to restrict the 'edit' operation (match all references).
+   *
+   * @return bool
+   *   TRUE if the 'edit' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictEditMatchAll(): bool;
+
+  /**
+   * Whether to restrict the 'delete' operation.
    *
    * @return bool
    *   TRUE if the 'delete' operation should be restricted, FALSE otherwise.
@@ -60,7 +76,15 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getRestrictDelete(): bool;
 
   /**
-   * Indicates whether to restrict any other operation.
+   * Whether to restrict the 'delete' operation (match all references).
+   *
+   * @return bool
+   *   TRUE if the 'delete' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictDeleteMatchAll(): bool;
+
+  /**
+   * Whether to restrict any other operation.
    *
    * @return bool
    *   TRUE if any other operation should be restricted, FALSE otherwise.
@@ -68,11 +92,11 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getRestrictOther(): bool;
 
   /**
-   * Indicates whether strict match is in effect.
+   * Whether to restrict any other operation (match all references).
    *
    * @return bool
-   *   TRUE if strict match is in effect, FALSE otherwise.
+   *   TRUE if any other operation should be restricted, FALSE otherwise.
    */
-  public function getStrictMatch(): bool;
+  public function getRestrictOtherMatchAll(): bool;
 
 }

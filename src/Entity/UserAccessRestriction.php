@@ -48,10 +48,13 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
  *     "restricted_bundle",
  *     "reference_field",
  *     "restrict_view",
+ *     "restrict_view_match_all",
  *     "restrict_edit",
+ *     "restrict_edit_match_all",
  *     "restrict_delete",
+ *     "restrict_delete_match_all",
  *     "restrict_other",
- *     "strict_match",
+ *     "restrict_other_match_all",
  *   },
  * )
  */
@@ -88,9 +91,19 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   protected $restrict_view;
 
   /**
+   * Whether to restrict the 'view' operation (match all references).
+   */
+  protected $restrict_view_match_all;
+
+  /**
    * Whether to restrict the 'edit' operation.
    */
   protected $restrict_edit;
+
+  /**
+   * Whether to restrict the 'edit' operation (match all references).
+   */
+  protected $restrict_edit_match_all;
 
   /**
    * Whether to restrict the 'delete' operation.
@@ -98,14 +111,19 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   protected $restrict_delete;
 
   /**
+   * Whether to restrict the 'delete' operation (match all references).
+   */
+  protected $restrict_delete_match_all;
+
+  /**
    * Whether to restrict any other operation.
    */
   protected $restrict_other;
 
   /**
-   * Whether all items must match as opposed to only one item.
+   * Whether to restrict any other operation (match all references).
    */
-  protected $strict_match;
+  protected $restrict_other_match_all;
 
   /**
   * {@inheritdoc}
@@ -138,8 +156,22 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
   * {@inheritdoc}
    */
+  public function getRestrictViewMatchAll(): bool {
+    return (bool) $this->restrict_view_match_all ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
   public function getRestrictEdit(): bool {
     return (bool) $this->restrict_edit ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
+  public function getRestrictEditMatchAll(): bool {
+    return (bool) $this->restrict_edit_match_all ?? FALSE;
   }
 
   /**
@@ -152,6 +184,13 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
   * {@inheritdoc}
    */
+  public function getRestrictDeleteMatchAll(): bool {
+    return (bool) $this->restrict_delete_match_all ?? FALSE;
+  }
+
+  /**
+  * {@inheritdoc}
+   */
   public function getRestrictOther(): bool {
     return (bool) $this->restrict_other ?? FALSE;
   }
@@ -159,8 +198,8 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
   * {@inheritdoc}
    */
-  public function getStrictMatch(): bool {
-    return (bool) $this->strict_match ?? FALSE;
+  public function getRestrictOtherMatchAll(): bool {
+    return (bool) $this->restrict_other_match_all ?? FALSE;
   }
 
 }
