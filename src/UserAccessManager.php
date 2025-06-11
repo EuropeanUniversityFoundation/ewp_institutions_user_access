@@ -11,10 +11,9 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\user\Entity\User;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\ewp_institutions_user\InstitutionUserBridge;
-use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
+use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
 
 /**
  * User access manager service.
@@ -84,7 +83,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
       }
     }
 
-    $user = User::load($account->id());
+    $user = $this->entityTypeManager->getStorage('user')->load($account->id());
     $user_ref = $this->getSortedTargetId($user, self::BASE_FIELD);
 
     $forbidden = FALSE;
@@ -97,29 +96,29 @@ final class UserAccessManager implements UserAccessManagerInterface {
         // Reference field value is necessary to calculate the restriction.
         if (!empty($ref)) {
           switch ($operation) {
-            case UserAccessRestrictionInterface::OPERATION_VIEW:
-            $match_all = $restriction->getRestrictViewMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictView());
-            break;
+            case self::OPERATION_VIEW:
+              $match_all = $restriction->getRestrictViewMatchAll();
+              $match = $this->valuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictView());
+              break;
 
-            case UserAccessRestrictionInterface::OPERATION_EDIT:
-            $match_all = $restriction->getRestrictEditMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictEdit());
-            break;
+            case self::OPERATION_EDIT:
+              $match_all = $restriction->getRestrictEditMatchAll();
+              $match = $this->valuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictEdit());
+              break;
 
-            case UserAccessRestrictionInterface::OPERATION_DELETE:
-            $match_all = $restriction->getRestrictDeleteMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictDelete());
-            break;
+            case self::OPERATION_DELETE:
+              $match_all = $restriction->getRestrictDeleteMatchAll();
+              $match = $this->valuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictDelete());
+              break;
 
             default:
-            $match_all = $restriction->getRestrictOtherMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictOther());
-            break;
+              $match_all = $restriction->getRestrictOtherMatchAll();
+              $match = $this->valuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictOther());
+              break;
           }
         }
       }
@@ -169,6 +168,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
    *   A sorted list of referenced entity IDs.
    */
   private function getSortedTargetId(EntityInterface $entity, string $field): array {
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
     $ref = $entity->get($field)->getValue();
 
     $target_id = [];
@@ -212,7 +212,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to which access is being forbidden.
-   * @param \Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface $restriction
+   * @param \Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface $restriction
    *   The restriction that determines this access result.
    *
    * @return \Drupal\Core\Access\AccessResultInterface

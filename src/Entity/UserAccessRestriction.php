@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\ewp_institutions_user_access\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
 
 /**
  * Defines the user access restriction entity type.
@@ -73,133 +72,133 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
    * The entity type to be restricted.
    */
-  protected $restricted_type;
+  protected string $restricted_type;
 
   /**
    * The entity bundle to be restricted.
    */
-  protected $restricted_bundle;
+  protected string $restricted_bundle;
 
   /**
    * The reference field used to calculate restrictions.
    */
-  protected $reference_field;
+  protected string $reference_field;
 
   /**
    * Whether to restrict the 'view' operation.
    */
-  protected $restrict_view;
+  protected bool $restrict_view;
 
   /**
    * Whether to restrict the 'view' operation (match all references).
    */
-  protected $restrict_view_match_all;
+  protected bool $restrict_view_match_all;
 
   /**
    * Whether to restrict the 'edit' operation.
    */
-  protected $restrict_edit;
+  protected bool $restrict_edit;
 
   /**
    * Whether to restrict the 'edit' operation (match all references).
    */
-  protected $restrict_edit_match_all;
+  protected bool $restrict_edit_match_all;
 
   /**
    * Whether to restrict the 'delete' operation.
    */
-  protected $restrict_delete;
+  protected bool $restrict_delete;
 
   /**
    * Whether to restrict the 'delete' operation (match all references).
    */
-  protected $restrict_delete_match_all;
+  protected bool $restrict_delete_match_all;
 
   /**
    * Whether to restrict any other operation.
    */
-  protected $restrict_other;
+  protected bool $restrict_other;
 
   /**
    * Whether to restrict any other operation (match all references).
    */
-  protected $restrict_other_match_all;
+  protected bool $restrict_other_match_all;
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictedEntityTypeId(): ?string {
     return $this->restricted_type;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictedEntityBundleId(): ?string {
     return $this->restricted_bundle;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getReferenceFieldName(): ?string {
     return $this->reference_field;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictView(): bool {
-    return (bool) $this->restrict_view ?? FALSE;
+    return (bool) $this->restrict_view;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictViewMatchAll(): bool {
-    return (bool) $this->restrict_view_match_all ?? FALSE;
+    return (bool) $this->restrict_view_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictEdit(): bool {
-    return (bool) $this->restrict_edit ?? FALSE;
+    return (bool) $this->restrict_edit;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictEditMatchAll(): bool {
-    return (bool) $this->restrict_edit_match_all ?? FALSE;
+    return (bool) $this->restrict_edit_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictDelete(): bool {
-    return (bool) $this->restrict_delete ?? FALSE;
+    return (bool) $this->restrict_delete;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictDeleteMatchAll(): bool {
-    return (bool) $this->restrict_delete_match_all ?? FALSE;
+    return (bool) $this->restrict_delete_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictOther(): bool {
-    return (bool) $this->restrict_other ?? FALSE;
+    return (bool) $this->restrict_other;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictOtherMatchAll(): bool {
-    return (bool) $this->restrict_other_match_all ?? FALSE;
+    return (bool) $this->restrict_other_match_all;
   }
 
 }

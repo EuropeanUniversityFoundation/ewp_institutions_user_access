@@ -15,6 +15,7 @@ interface UserAccessRestrictionOptionsInterface {
    * Builds and returns a list of options.
    *
    * @return array
+   *   An array of options keyed by their machine name combination.
    */
   public function getOptions(): array;
 

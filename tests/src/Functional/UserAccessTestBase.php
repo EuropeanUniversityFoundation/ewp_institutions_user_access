@@ -77,7 +77,7 @@ abstract class UserAccessTestBase extends BrowserTestBase {
 
     // Create the bypassPermissionUser:
     $this->bypassPermissionUser = $this->createUser([
-      'bypass user access restrictions'
+      'bypass user access restrictions',
     ]);
 
     // Create the authenticatedUser:
