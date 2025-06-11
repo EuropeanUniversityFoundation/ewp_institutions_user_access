@@ -6,3 +6,9 @@ services:
   ewp_institutions_user_access.manager:
     class: Drupal\ewp_institutions_user_access\UserAccessManager
     arguments: ['@entity_field.manager', '@entity_type.bundle.info', '@entity_type.manager']
+
+  cache_context.user.hei:
+    class: Drupal\ewp_institutions_user_access\Cache\Context\UserInstitutionCacheContext
+    arguments: ['@current_user', '@entity_type.manager', '@ewp_institutions_user.bridge']
+    tags:
+      - { name: cache.context}
