@@ -12,7 +12,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\ewp_institutions_user\InstitutionUserBridge;
 
 /**
- * Defines the UserInstitutionCacheContext service, for "per user hei" caching.
+ * Defines a cache context service, for "per user institution" caching.
  *
  * Cache context ID: 'user.hei'.
  */
