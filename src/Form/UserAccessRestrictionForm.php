@@ -18,6 +18,13 @@ final class UserAccessRestrictionForm extends EntityForm {
   const SEPARATOR = UserAccessRestrictionOptionsInterface::SEPARATOR;
 
   /**
+   * The entity.
+   *
+   * @var \Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface
+   */
+  protected $entity;
+
+  /**
    * The user access restriction options provider.
    *
    * @var \Drupal\ewp_institutions_user_access\UserAccessRestrictionOptionsInterface
@@ -109,30 +116,61 @@ final class UserAccessRestrictionForm extends EntityForm {
       '#default_value' => $this->entity->getReferenceFieldName(),
     ];
 
-    $fieldset_title = '%op';
-    $checkbox_title = 'Restrict access to %op based on @user_hei';
-    $match_all_title = '@user_hei must match all @ref to access %op';
-
     $title_user_arg = $this->t('%user field value', [
       '%user' => $this->t('User Institution'),
     ]);
 
     $title_ref_arg = $this->t('referenced entities');
 
+    $operation_add = $this->t('Create ...');
     $operation_view = $this->t('View any ...');
     $operation_edit = $this->t('Edit any ...');
     $operation_delete = $this->t('Delete any ...');
 
+    $form['op_add'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('%op', [
+        '%op' => $operation_add,
+      ]),
+    ];
+
+    $form['op_add']['restrict_add'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Restrict access to %op based on @user_hei', [
+        '%op' => $operation_add,
+        '@user_hei' => $title_user_arg,
+      ]),
+      '#default_value' => $this->entity->getRestrictAdd(),
+      '#attributes' => [
+        'name' => 'restrict_add',
+      ],
+    ];
+
+    $form['op_add']['restrict_add_match_all'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('@user_hei must match all @ref to access %op', [
+        '@user_hei' => $title_user_arg,
+        '@ref' => $title_ref_arg,
+        '%op' => $operation_add,
+      ]),
+      '#default_value' => $this->entity->getRestrictAddMatchAll(),
+      '#states' => [
+        'enabled' => [
+          ':input[name="restrict_add"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
     $form['op_view'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t($fieldset_title, [
+      '#title' => $this->t('%op', [
         '%op' => $operation_view,
       ]),
     ];
 
     $form['op_view']['restrict_view'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($checkbox_title, [
+      '#title' => $this->t('Restrict access to %op based on @user_hei', [
         '%op' => $operation_view,
         '@user_hei' => $title_user_arg,
       ]),
@@ -144,7 +182,7 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     $form['op_view']['restrict_view_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($match_all_title, [
+      '#title' => $this->t('@user_hei must match all @ref to access %op', [
         '@user_hei' => $title_user_arg,
         '@ref' => $title_ref_arg,
         '%op' => $operation_view,
@@ -159,14 +197,14 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     $form['op_edit'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t($fieldset_title, [
+      '#title' => $this->t('%op', [
         '%op' => $operation_edit,
       ]),
     ];
 
     $form['op_edit']['restrict_edit'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($checkbox_title, [
+      '#title' => $this->t('Restrict access to %op based on @user_hei', [
         '%op' => $operation_edit,
         '@user_hei' => $title_user_arg,
       ]),
@@ -178,7 +216,7 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     $form['op_edit']['restrict_edit_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($match_all_title, [
+      '#title' => $this->t('@user_hei must match all @ref to access %op', [
         '@user_hei' => $title_user_arg,
         '@ref' => $title_ref_arg,
         '%op' => $operation_edit,
@@ -193,14 +231,14 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     $form['op_delete'] = [
       '#type' => 'fieldset',
-      '#title' => $this->t($fieldset_title, [
+      '#title' => $this->t('%op', [
         '%op' => $operation_delete,
       ]),
     ];
 
     $form['op_delete']['restrict_delete'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($checkbox_title, [
+      '#title' => $this->t('Restrict access to %op based on @user_hei', [
         '%op' => $operation_delete,
         '@user_hei' => $title_user_arg,
       ]),
@@ -212,7 +250,7 @@ final class UserAccessRestrictionForm extends EntityForm {
 
     $form['op_delete']['restrict_delete_match_all'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t($match_all_title, [
+      '#title' => $this->t('@user_hei must match all @ref to access %op', [
         '@user_hei' => $title_user_arg,
         '@ref' => $title_ref_arg,
         '%op' => $operation_delete,
@@ -323,6 +361,7 @@ final class UserAccessRestrictionForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state): int {
+    /** @var int<1, 2> $result */
     $result = parent::save($form, $form_state);
     $args = ['%label' => $this->entity->label()];
     $this->messenger()->addStatus(

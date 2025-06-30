@@ -27,8 +27,16 @@ final class UserAccessRestrictionListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity): array {
-    /** @var \Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface $entity */
+    /** @var \Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface $entity */
     $restricted = [];
+
+    if ($entity->getRestrictAdd()) {
+      $operation = 'add';
+      if ($entity->getRestrictAddMatchAll()) {
+        $operation .= ' (match all)';
+      }
+      $restricted[] = $operation;
+    }
 
     if ($entity->getRestrictView()) {
       $operation = 'view';

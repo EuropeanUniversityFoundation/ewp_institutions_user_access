@@ -15,6 +15,7 @@ interface UserAccessRestrictionOptionsInterface {
    * Builds and returns a list of options.
    *
    * @return array
+   *   Array of options to be used in form select elements.
    */
   public function getOptions(): array;
 

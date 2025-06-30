@@ -36,6 +36,22 @@ interface UserAccessRestrictionInterface extends ConfigEntityInterface {
   public function getReferenceFieldName(): ?string;
 
   /**
+   * Whether to restrict the 'add' operation.
+   *
+   * @return bool
+   *   TRUE if the 'add' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictAdd(): bool;
+
+  /**
+   * Whether to restrict the 'add' operation (match all references).
+   *
+   * @return bool
+   *   TRUE if the 'add' operation should be restricted, FALSE otherwise.
+   */
+  public function getRestrictAddMatchAll(): bool;
+
+  /**
    * Whether to restrict the 'view' operation.
    *
    * @return bool

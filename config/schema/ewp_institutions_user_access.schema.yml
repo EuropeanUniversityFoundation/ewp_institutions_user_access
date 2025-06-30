@@ -19,6 +19,12 @@ ewp_institutions_user_access.user_access_restriction.*:
     reference_field:
       type: machine_name
       label: 'Reference field used to calculate restrictions'
+    restrict_add:
+      type: boolean
+      label: "Restrict 'add' operation"
+    restrict_add_match_all:
+      type: boolean
+      label: "Restrict 'add' operation (match all references)"
     restrict_view:
       type: boolean
       label: "Restrict 'view' operation"

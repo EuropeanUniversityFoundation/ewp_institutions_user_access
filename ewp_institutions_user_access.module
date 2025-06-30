@@ -13,6 +13,16 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
+ * Implements hook_entity_type_alter().
+ *
+ * @param array $entity_types
+ */
+function ewp_institutions_user_access_entity_type_alter(array &$entity_types) {
+  $access_manager = \Drupal::service('ewp_institutions_user_access.manager');
+  $access_manager->addConstraints($entity_types);
+}
+
+/**
  * Implements hook_entity_access().
  */
 function ewp_institutions_user_access_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
@@ -33,5 +43,5 @@ function ewp_institutions_user_access_entity_access(EntityInterface $entity, $op
 
   $access_manager = \Drupal::service('ewp_institutions_user_access.manager');
 
-  return $access_manager->calculate($entity, $operation, $account);
+  return $access_manager->calculateAccess($entity, $operation, $account);
 }

@@ -13,9 +13,21 @@ use Drupal\Core\Session\AccountInterface;
  */
 interface UserAccessManagerInterface {
 
+  const OPERATION_ADD = 'add';
   const OPERATION_VIEW = 'view';
   const OPERATION_EDIT = 'edit';
   const OPERATION_DELETE = 'delete';
+  const OPERATION_OTHER = 'other';
+
+  /**
+   * Adds constraints to entity types.
+   *
+   * @param array $entity_types
+   *   The list of entity types.
+   *
+   * @see hook_entity_type_alter()
+   */
+  public function addConstraints(array &$entity_types): void;
 
   /**
    * Calculates access to an entity.
@@ -32,6 +44,45 @@ interface UserAccessManagerInterface {
    *
    * @see hook_entity_access()
    */
-  public function calculate(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface;
+  public function calculateAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface;
+
+  /**
+   * Retrieves all user access restrictions that may apply to the entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check.
+   *
+   * @return array
+   *   A list of user access restrictions.
+   */
+  public function getEntityRestrictions(EntityInterface $entity): array;
+
+  /**
+   * Provides a sorted list of referenced entity IDs.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity to check.
+   * @param string $field
+   *   The field name to check.
+   *
+   * @return array
+   *   A sorted list of referenced entity IDs.
+   */
+  public function getSortedTargetId(EntityInterface $entity, string $field): array;
+
+  /**
+   * Checks whether user field values match reference field values.
+   *
+   * @param array $user_ref
+   *   User field values.
+   * @param array $ref
+   *   Reference field values.
+   * @param bool $match_all
+   *   Whether the values will be strictly matched.
+   *
+   * @return bool
+   *   Indicates whether values match.
+   */
+  public function referenceValuesMatch(array $user_ref, array $ref, bool $match_all = FALSE): bool;
 
 }

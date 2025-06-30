@@ -15,8 +15,6 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestriction;
  */
 final class UserAccessRestrictionOptions implements UserAccessRestrictionOptionsInterface {
 
-  const SEPARATOR = UserAccessRestrictionOptionsInterface::SEPARATOR;
-
   /**
    * The entity field manager.
    *

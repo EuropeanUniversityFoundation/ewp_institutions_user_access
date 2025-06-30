@@ -6,15 +6,14 @@ namespace Drupal\ewp_institutions_user_access;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\user\Entity\User;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\ewp_institutions_user\InstitutionUserBridge;
-use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
+use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
 
 /**
  * User access manager service.
@@ -22,6 +21,7 @@ use Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface;
 final class UserAccessManager implements UserAccessManagerInterface {
 
   const BASE_FIELD = InstitutionUserBridge::BASE_FIELD;
+  const CONSTRAINT = 'UserCreateWithSameInstitution';
 
   /**
    * The entity field manager.
@@ -67,8 +67,20 @@ final class UserAccessManager implements UserAccessManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function calculate(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
-    $restrictions = $this->getApplicableRestrictions($entity);
+  public function addConstraints(array &$entity_types): void {
+    foreach ($entity_types as $id => $definition) {
+      $restrictions = $this->getEntityTypeRestrictions($id, 'add');
+      if (!empty($restrictions)) {
+        $entity_types[$id]->addConstraint(self::CONSTRAINT);
+      }
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function calculateAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
+    $restrictions = $this->getEntityRestrictions($entity);
 
     // If there are no restrictions, the process ends here.
     if (empty($restrictions)) {
@@ -84,7 +96,7 @@ final class UserAccessManager implements UserAccessManagerInterface {
       }
     }
 
-    $user = User::load($account->id());
+    $user = $this->entityTypeManager->getStorage('user')->load($account->id());
     $user_ref = $this->getSortedTargetId($user, self::BASE_FIELD);
 
     $forbidden = FALSE;
@@ -97,29 +109,29 @@ final class UserAccessManager implements UserAccessManagerInterface {
         // Reference field value is necessary to calculate the restriction.
         if (!empty($ref)) {
           switch ($operation) {
-            case UserAccessRestrictionInterface::OPERATION_VIEW:
-            $match_all = $restriction->getRestrictViewMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictView());
-            break;
+            case UserAccessManagerInterface::OPERATION_VIEW:
+              $match_all = $restriction->getRestrictViewMatchAll();
+              $match = $this->referenceValuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictView());
+              break;
 
-            case UserAccessRestrictionInterface::OPERATION_EDIT:
-            $match_all = $restriction->getRestrictEditMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictEdit());
-            break;
+            case UserAccessManagerInterface::OPERATION_EDIT:
+              $match_all = $restriction->getRestrictEditMatchAll();
+              $match = $this->referenceValuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictEdit());
+              break;
 
-            case UserAccessRestrictionInterface::OPERATION_DELETE:
-            $match_all = $restriction->getRestrictDeleteMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictDelete());
-            break;
+            case UserAccessManagerInterface::OPERATION_DELETE:
+              $match_all = $restriction->getRestrictDeleteMatchAll();
+              $match = $this->referenceValuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictDelete());
+              break;
 
             default:
-            $match_all = $restriction->getRestrictOtherMatchAll();
-            $match = $this->valuesMatch($user_ref, $ref, $match_all);
-            $forbidden = (!$match && $restriction->getRestrictOther());
-            break;
+              $match_all = $restriction->getRestrictOtherMatchAll();
+              $match = $this->referenceValuesMatch($user_ref, $ref, $match_all);
+              $forbidden = (!$match && $restriction->getRestrictOther());
+              break;
           }
         }
       }
@@ -137,15 +149,46 @@ final class UserAccessManager implements UserAccessManagerInterface {
   }
 
   /**
-   * Retrieves all user access restrictions that may apply to the entity.
+   * Retrieves all user access restrictions that may apply to the entity type.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to check.
+   * @param string $entity_type
+   *   The entity type to check.
+   * @param string|null $operation
+   *   Optional: the operation to check.
    *
    * @return array
    *   A list of user access restrictions.
    */
-  private function getApplicableRestrictions(EntityInterface $entity): array {
+  private function getEntityTypeRestrictions(string $entity_type, ?string $operation = NULL): array {
+    $properties = [
+      'status' => TRUE,
+      'restricted_type' => $entity_type,
+    ];
+
+    if (!empty($operation)) {
+      $named = [
+        self::OPERATION_ADD,
+        self::OPERATION_VIEW,
+        self::OPERATION_EDIT,
+        self::OPERATION_DELETE,
+      ];
+
+      $op = (in_array($operation, $named)) ? $operation : self::OPERATION_OTHER;
+
+      $properties['restrict_' . $op] = TRUE;
+    }
+
+    $restrictions = $this->entityTypeManager
+      ->getStorage('user_access_restriction')
+      ->loadByProperties($properties);
+
+    return $restrictions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEntityRestrictions(EntityInterface $entity): array {
     $restrictions = $this->entityTypeManager
       ->getStorage('user_access_restriction')
       ->loadByProperties([
@@ -158,17 +201,10 @@ final class UserAccessManager implements UserAccessManagerInterface {
   }
 
   /**
-   * Provides a sorted list of referenced entity IDs.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to check.
-   * @param string $field
-   *   The field name to check.
-   *
-   * @return array
-   *   A sorted list of referenced entity IDs.
+   * {@inheritdoc}
    */
-  private function getSortedTargetId(EntityInterface $entity, string $field): array {
+  public function getSortedTargetId(EntityInterface $entity, string $field): array {
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
     $ref = $entity->get($field)->getValue();
 
     $target_id = [];
@@ -185,19 +221,9 @@ final class UserAccessManager implements UserAccessManagerInterface {
   }
 
   /**
-   * Checks whether user field values match reference field values.
-   *
-   * @param array $user_ref
-   *   User field values.
-   * @param array $ref
-   *   Reference field values.
-   * @param bool $match_all
-   *   Whether the values will be strictly matched.
-   *
-   * @return bool
-   *   Indicates whether values match.
+   * {@inheritdoc}
    */
-  private function valuesMatch(array $user_ref, array $ref, bool $match_all = FALSE): bool {
+  public function referenceValuesMatch(array $user_ref, array $ref, bool $match_all = FALSE): bool {
     $overlap = array_values(array_intersect($user_ref, $ref));
 
     if ($match_all) {
@@ -212,13 +238,14 @@ final class UserAccessManager implements UserAccessManagerInterface {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to which access is being forbidden.
-   * @param \Drupal\ewp_institutions_user_access\UserAccessRestrictionInterface $restriction
+   * @param \Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface $restriction
    *   The restriction that determines this access result.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
   private function accessForbidden(EntityInterface $entity, UserAccessRestrictionInterface $restriction): AccessResultInterface {
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
     $access = AccessResult::forbidden()
       ->cachePerUser()
       ->addCacheableDependency($entity)

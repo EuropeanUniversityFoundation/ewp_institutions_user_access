@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\ewp_institutions_user_access\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
 
 /**
  * Defines the user access restriction entity type.
@@ -47,6 +46,8 @@ use Drupal\ewp_institutions_user_access\Entity\UserAccessRestrictionInterface;
  *     "restricted_type",
  *     "restricted_bundle",
  *     "reference_field",
+ *     "restrict_add",
+ *     "restrict_add_match_all",
  *     "restrict_view",
  *     "restrict_view_match_all",
  *     "restrict_edit",
@@ -73,133 +74,177 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
   /**
    * The entity type to be restricted.
    */
-  protected $restricted_type;
+  protected string $restricted_type;
 
   /**
    * The entity bundle to be restricted.
    */
-  protected $restricted_bundle;
+  protected string $restricted_bundle;
 
   /**
    * The reference field used to calculate restrictions.
    */
-  protected $reference_field;
+  protected string $reference_field;
+
+  /**
+   * Whether to restrict the 'add' operation.
+   *
+   * @var bool
+   */
+  protected $restrict_add = FALSE;
+
+  /**
+   * Whether to restrict the 'add' operation (match all references).
+   *
+   * @var bool
+   */
+  protected $restrict_add_match_all = FALSE;
 
   /**
    * Whether to restrict the 'view' operation.
+   *
+   * @var bool
    */
-  protected $restrict_view;
+  protected $restrict_view = FALSE;
 
   /**
    * Whether to restrict the 'view' operation (match all references).
+   *
+   * @var bool
    */
-  protected $restrict_view_match_all;
+  protected $restrict_view_match_all = FALSE;
 
   /**
    * Whether to restrict the 'edit' operation.
+   *
+   * @var bool
    */
-  protected $restrict_edit;
+  protected $restrict_edit = FALSE;
 
   /**
    * Whether to restrict the 'edit' operation (match all references).
+   *
+   * @var bool
    */
-  protected $restrict_edit_match_all;
+  protected $restrict_edit_match_all = FALSE;
 
   /**
    * Whether to restrict the 'delete' operation.
+   *
+   * @var bool
    */
-  protected $restrict_delete;
+  protected $restrict_delete = FALSE;
 
   /**
    * Whether to restrict the 'delete' operation (match all references).
+   *
+   * @var bool
    */
-  protected $restrict_delete_match_all;
+  protected $restrict_delete_match_all = FALSE;
 
   /**
    * Whether to restrict any other operation.
+   *
+   * @var bool
    */
-  protected $restrict_other;
+  protected $restrict_other = FALSE;
 
   /**
    * Whether to restrict any other operation (match all references).
+   *
+   * @var bool
    */
-  protected $restrict_other_match_all;
+  protected $restrict_other_match_all = FALSE;
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictedEntityTypeId(): ?string {
     return $this->restricted_type;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictedEntityBundleId(): ?string {
     return $this->restricted_bundle;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getReferenceFieldName(): ?string {
     return $this->reference_field;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
+   */
+  public function getRestrictAdd(): bool {
+    return (bool) $this->restrict_add;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRestrictAddMatchAll(): bool {
+    return (bool) $this->restrict_add_match_all;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function getRestrictView(): bool {
-    return (bool) $this->restrict_view ?? FALSE;
+    return (bool) $this->restrict_view;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictViewMatchAll(): bool {
-    return (bool) $this->restrict_view_match_all ?? FALSE;
+    return (bool) $this->restrict_view_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictEdit(): bool {
-    return (bool) $this->restrict_edit ?? FALSE;
+    return (bool) $this->restrict_edit;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictEditMatchAll(): bool {
-    return (bool) $this->restrict_edit_match_all ?? FALSE;
+    return (bool) $this->restrict_edit_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictDelete(): bool {
-    return (bool) $this->restrict_delete ?? FALSE;
+    return (bool) $this->restrict_delete;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictDeleteMatchAll(): bool {
-    return (bool) $this->restrict_delete_match_all ?? FALSE;
+    return (bool) $this->restrict_delete_match_all;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictOther(): bool {
-    return (bool) $this->restrict_other ?? FALSE;
+    return (bool) $this->restrict_other;
   }
 
   /**
-  * {@inheritdoc}
+   * {@inheritdoc}
    */
   public function getRestrictOtherMatchAll(): bool {
-    return (bool) $this->restrict_other_match_all ?? FALSE;
+    return (bool) $this->restrict_other_match_all;
   }
 
 }
