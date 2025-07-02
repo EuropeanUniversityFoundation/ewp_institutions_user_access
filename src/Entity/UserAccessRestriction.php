@@ -63,28 +63,38 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
 
   /**
    * The restriction ID.
+   *
+   * @var string
    */
-  protected string $id;
+  protected $id;
 
   /**
    * The restriction label.
+   *
+   * @var string
    */
-  protected string $label;
+  protected $label;
 
   /**
    * The entity type to be restricted.
+   *
+   * @var string|null
    */
-  protected string $restricted_type;
+  protected $restricted_type;
 
   /**
    * The entity bundle to be restricted.
+   *
+   * @var string|null
    */
-  protected string $restricted_bundle;
+  protected $restricted_bundle;
 
   /**
    * The reference field used to calculate restrictions.
+   *
+   * @var string|null
    */
-  protected string $reference_field;
+  protected $reference_field;
 
   /**
    * Whether to restrict the 'add' operation.
@@ -160,21 +170,21 @@ final class UserAccessRestriction extends ConfigEntityBase implements UserAccess
    * {@inheritdoc}
    */
   public function getRestrictedEntityTypeId(): ?string {
-    return $this->restricted_type;
+    return $this->restricted_type ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getRestrictedEntityBundleId(): ?string {
-    return $this->restricted_bundle;
+    return $this->restricted_bundle ?? NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getReferenceFieldName(): ?string {
-    return $this->reference_field;
+    return $this->reference_field ?? NULL;
   }
 
   /**

@@ -67,18 +67,6 @@ final class UserAccessManager implements UserAccessManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function addConstraints(array &$entity_types): void {
-    foreach ($entity_types as $id => $definition) {
-      $restrictions = $this->getEntityTypeRestrictions($id, 'add');
-      if (!empty($restrictions)) {
-        $entity_types[$id]->addConstraint(self::CONSTRAINT);
-      }
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function calculateAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
     $restrictions = $this->getEntityRestrictions($entity);
 
@@ -146,43 +134,6 @@ final class UserAccessManager implements UserAccessManagerInterface {
       ->addCacheableDependency($entity);
 
     return $access;
-  }
-
-  /**
-   * Retrieves all user access restrictions that may apply to the entity type.
-   *
-   * @param string $entity_type
-   *   The entity type to check.
-   * @param string|null $operation
-   *   Optional: the operation to check.
-   *
-   * @return array
-   *   A list of user access restrictions.
-   */
-  private function getEntityTypeRestrictions(string $entity_type, ?string $operation = NULL): array {
-    $properties = [
-      'status' => TRUE,
-      'restricted_type' => $entity_type,
-    ];
-
-    if (!empty($operation)) {
-      $named = [
-        self::OPERATION_ADD,
-        self::OPERATION_VIEW,
-        self::OPERATION_EDIT,
-        self::OPERATION_DELETE,
-      ];
-
-      $op = (in_array($operation, $named)) ? $operation : self::OPERATION_OTHER;
-
-      $properties['restrict_' . $op] = TRUE;
-    }
-
-    $restrictions = $this->entityTypeManager
-      ->getStorage('user_access_restriction')
-      ->loadByProperties($properties);
-
-    return $restrictions;
   }
 
   /**

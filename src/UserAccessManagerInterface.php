@@ -20,16 +20,6 @@ interface UserAccessManagerInterface {
   const OPERATION_OTHER = 'other';
 
   /**
-   * Adds constraints to entity types.
-   *
-   * @param array $entity_types
-   *   The list of entity types.
-   *
-   * @see hook_entity_type_alter()
-   */
-  public function addConstraints(array &$entity_types): void;
-
-  /**
    * Calculates access to an entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity

@@ -6,3 +6,4 @@ core_version_requirement: ^10 || ^11
 dependencies:
   - ewp_institutions:ewp_institutions
   - ewp_institutions:ewp_institutions_user
+configure: entity.user_access_restriction.collection
