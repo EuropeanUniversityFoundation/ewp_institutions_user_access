@@ -15,7 +15,7 @@ interface UserAccessManagerInterface {
 
   const OPERATION_ADD = 'add';
   const OPERATION_VIEW = 'view';
-  const OPERATION_EDIT = 'edit';
+  const OPERATION_EDIT = 'update';
   const OPERATION_DELETE = 'delete';
   const OPERATION_OTHER = 'other';
 
